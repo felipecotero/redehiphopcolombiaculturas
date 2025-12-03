@@ -238,8 +238,20 @@
             <h2 class="text-2xl font-bold mb-4 text-pink-300 flex items-center">
                 <span class="mr-2">🎤</span> Roles y Expresiones
             </h2>
-            <div class="chart-container" style="height: 500px;">
-                <canvas id="rolesChart"></canvas>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="chart-container" style="height: 400px;">
+                    <canvas id="rolesChart"></canvas>
+                </div>
+                <div class="glass-panel bg-slate-800/50 p-4 rounded-lg overflow-y-auto custom-scrollbar"
+                    style="height: 400px;">
+                    <h4
+                        class="text-sm font-bold text-gray-400 mb-3 sticky top-0 bg-slate-900/90 p-2 rounded backdrop-blur-sm z-10">
+                        Detalle de Identidades
+                    </h4>
+                    <div id="rolesList" class="space-y-2">
+                        <!-- List injected via JS -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -382,8 +394,11 @@
             if (item.dept && item.dept !== "DESCONOCIDO") depts[item.dept] = (depts[item.dept] || 0) + 1;
 
             item.roles.forEach(r => {
-                if (r) roles[r] = (roles[r] || 0) + 1;
-                addToIndex(r, 'Rol');
+                let roleName = r;
+                if (roleName === 'Danza') roleName = 'Break Dance';
+                if (roleName === 'Todos los anteriores') roleName = 'Multidisciplinar (4 Elementos)';
+                if (roleName) roles[roleName] = (roles[roleName] || 0) + 1;
+                addToIndex(roleName, 'Rol');
             });
 
             if (item.year && !isNaN(item.year) && item.year > 1970 && item.year < 2025) {
@@ -477,14 +492,60 @@
         ];
 
         // Roles Chart
+        // --- Simplified Roles Logic ---
+        const roleCategories = {
+            'MC': 0,
+            'Break Dance': 0,
+            'Graffiti': 0,
+            'DJ / Beatmaker': 0,
+            'Conocimiento': 0
+        };
+
+        function getRoleCategory(role) {
+            const r = (role || '').toLowerCase();
+            if (r.includes('mc') || r.includes('rap') || r.includes('cantante') || r.includes('vocal') || r.includes('freestyle') || r.includes('improvisad') || r.includes('rimas')) return 'MC';
+            if (r.includes('danza') || r.includes('break') || r.includes('bboy') || r.includes('bgirl') || r.includes('baile') || r.includes('locking') || r.includes('popping') || r.includes('krump') || r.includes('dance')) return 'Break Dance';
+            if (r.includes('graffiti') || r.includes('mural') || r.includes('street') || r.includes('pintura') || r.includes('visual') || r.includes('aerosol') || r.includes('tag')) return 'Graffiti';
+            if (r.includes('dj') || r.includes('beat') || r.includes('produc') || r.includes('sonido') || r.includes('scratch') || r.includes('turntabl') || r.includes('mezcla')) return 'DJ / Beatmaker';
+            if (r.includes('conocimiento') || r.includes('knowledge') || r.includes('gestor') || r.includes('investiga') || r.includes('forma') || r.includes('educa') || r.includes('pedagog') || r.includes('taller') || r.includes('saberes')) return 'Conocimiento';
+            return null;
+        }
+
+        rawData.forEach(item => {
+            const itemRoles = Array.isArray(item.roles) ? item.roles : [];
+            const uniqueCats = new Set();
+
+            itemRoles.forEach(r => {
+                const cat = getRoleCategory(r);
+                if (cat) uniqueCats.add(cat);
+            });
+
+            uniqueCats.forEach(cat => {
+                roleCategories[cat]++;
+            });
+        });
+
+        const simplifiedChartData = Object.entries(roleCategories).sort((a, b) => b[1] - a[1]);
+
+        // Populate Detailed List
+        const rolesListEl = document.getElementById('rolesList');
+        rolesListEl.innerHTML = sortedRoles.map(r => `
+            <div class="flex justify-between items-center text-sm border-b border-slate-700/50 pb-1 last:border-0 hover:bg-slate-700/30 px-2 py-1 rounded transition-colors">
+                <span class="text-gray-300 truncate pr-2" title="${r[0]}">${r[0]}</span>
+                <span class="font-mono text-purple-400 font-bold">${r[1]}</span>
+            </div>
+        `).join('');
+
+        // Roles Chart (Simplified)
         new Chart(document.getElementById('rolesChart'), {
             type: 'doughnut',
             data: {
-                labels: sortedRoles.map(x => `${x[0]} (${x[1]})`),
+                labels: simplifiedChartData.map(x => `${x[0]} (${x[1]})`),
                 datasets: [{
-                    data: sortedRoles.map(x => x[1]),
-                    backgroundColor: distinctColors.slice(0, sortedRoles.length),
-                    borderWidth: 0
+                    data: simplifiedChartData.map(x => x[1]),
+                    backgroundColor: ['#ef4444', '#3b82f6', '#eab308', '#a855f7', '#10b981'],
+                    borderWidth: 0,
+                    hoverOffset: 4
                 }]
             },
             options: {
@@ -492,9 +553,28 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        position: 'right',
-                        labels: { color: '#e2e8f0', font: { size: 11 } }
+                        position: 'bottom',
+                        labels: {
+                            color: '#e2e8f0',
+                            font: { size: 11 },
+                            boxWidth: 12,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.chart._metasets[context.datasetIndex].total;
+                                const percentage = Math.round((value / total) * 100) + '%';
+                                return `${label}: ${percentage}`;
+                            }
+                        }
                     }
+                },
+                layout: {
+                    padding: 10
                 }
             }
         });
