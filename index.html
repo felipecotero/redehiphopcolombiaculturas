@@ -127,7 +127,7 @@
         <p class="text-gray-300 text-xl mb-2">Ministerio de las Culturas, las Artes y los Saberes de Colombia - Análisis
             y Regionalización 2023</p>
         <div class="text-gray-400 text-sm space-y-1">
-            <p>Información recopilada por: <span class="text-purple-300">Ricardo Modesto y Diana Avella</span> en el
+            <p>Información recopilada por: <span class="text-purple-300">Diana Avella y Ricardo Modesto</span> en el
                 Marco de la dirección de poblaciones en el año 2023</p>
             <p>Programación Dashboard: <span class="text-purple-300">Felipe Camacho Otero</span> - Enlace de
                 Comunicaciones Programa Artes para la Paz 2025</p>
@@ -1030,28 +1030,10 @@
         document.getElementById('top-5-years').innerText = top5Years;
 
         // Initial Render
-        if (rawData.length === 0) {
-            const errDiv = document.createElement('div');
-            errDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:red;color:white;padding:20px;z-index:9999;font-size:24px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.5);';
-            errDiv.innerText = 'ERROR CRÍTICO: NO SE CARGARON DATOS (rawData is empty)';
-            document.body.appendChild(errDiv);
-        }
-
-        if (allMarkers.length === 0) {
-            const errDiv = document.createElement('div');
-            errDiv.style.cssText = 'position:fixed;top:55%;left:50%;transform:translate(-50%,-50%);background:red;color:white;padding:20px;z-index:9999;font-size:24px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.5);';
-            errDiv.innerText = 'ERROR: AllMarkers is empty (Lat/Lng missing?)';
-            document.body.appendChild(errDiv);
-        }
-
         try {
             renderDirectory();
         } catch (e) {
             console.error(e);
-            const errDiv = document.createElement('div');
-            errDiv.style.cssText = 'position:fixed;top:60%;left:50%;transform:translate(-50%,-50%);background:orange;color:white;padding:20px;z-index:9999;font-size:24px;border-radius:10px;box-shadow:0 0 20px rgba(0,0,0,0.5);';
-            errDiv.innerText = 'ERROR RENDERIZANDO DIRECTORIO: ' + e.message;
-            document.body.appendChild(errDiv);
         }
 
         // Event Listeners for Directory
