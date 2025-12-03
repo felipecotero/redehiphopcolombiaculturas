@@ -330,6 +330,10 @@
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     <input type="text" id="dirSearch" placeholder="Buscar en directorio..."
                         class="bg-slate-800 border border-slate-700 text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-purple-500 w-full">
+                    <div id="dirSuggestionsBox"
+                        class="absolute top-full left-0 w-full bg-slate-800 border border-slate-700 rounded-lg mt-1 hidden z-50 max-h-60 overflow-y-auto shadow-xl">
+                        <!-- Suggestions injected via JS -->
+                    </div>
                 </div>
                 <select id="dirSort"
                     class="bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-purple-500"
@@ -339,6 +343,32 @@
                     <option value="dept">Por Departamento</option>
                 </select>
             </div>
+        </div>
+
+        <!-- Social Media Filters -->
+        <div
+            class="flex flex-wrap gap-4 mb-4 items-center justify-end text-sm text-gray-300 bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
+            <span class="mr-2 font-bold text-purple-400"><i class="fas fa-filter"></i> Filtrar por Redes:</span>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" id="filterInstagram"
+                    class="form-checkbox rounded text-purple-600 bg-slate-800 border-slate-600 focus:ring-purple-500 focus:ring-offset-slate-900">
+                <span><i class="fab fa-instagram text-pink-500"></i> Instagram</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" id="filterYoutube"
+                    class="form-checkbox rounded text-purple-600 bg-slate-800 border-slate-600 focus:ring-purple-500 focus:ring-offset-slate-900">
+                <span><i class="fab fa-youtube text-red-500"></i> YouTube</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" id="filterTwitter"
+                    class="form-checkbox rounded text-purple-600 bg-slate-800 border-slate-600 focus:ring-purple-500 focus:ring-offset-slate-900">
+                <span><i class="fab fa-twitter text-blue-400"></i> X / Twitter</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" id="filterWebsite"
+                    class="form-checkbox rounded text-purple-600 bg-slate-800 border-slate-600 focus:ring-purple-500 focus:ring-offset-slate-900">
+                <span><i class="fas fa-globe text-green-400"></i> Web</span>
+            </label>
         </div>
 
         <div class="text-sm text-gray-400 mb-4">
@@ -956,12 +986,25 @@
             const sortType = dirSort.value;
             const container = document.getElementById('directory-grid');
 
+            // Social Filters
+            const filterInsta = document.getElementById('filterInstagram').checked;
+            const filterYt = document.getElementById('filterYoutube').checked;
+            const filterTw = document.getElementById('filterTwitter').checked;
+            const filterWeb = document.getElementById('filterWebsite').checked;
+
             // Filter
             let filtered = rawData.filter(item => {
                 const name = (item.name || '').toLowerCase();
                 const city = (item.city || '').toLowerCase();
                 const dept = (item.dept || '').toLowerCase();
                 const roles = Array.isArray(item.roles) ? item.roles : [];
+                const socials = item.socials || {};
+
+                // Check Social Filters
+                if (filterInsta && !socials.instagram) return false;
+                if (filterYt && !socials.youtube) return false;
+                if (filterTw && !socials.twitter) return false;
+                if (filterWeb && !socials.website) return false;
 
                 return (
                     name.includes(searchTerm) ||
@@ -1117,8 +1160,54 @@
         }
 
         // Event Listeners for Directory
-        dirSearch.addEventListener('input', renderDirectory);
+        const dirSuggestionsBox = document.getElementById('dirSuggestionsBox');
+
+        dirSearch.addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            renderDirectory(); // Live filter
+
+            if (val.length < 1) {
+                dirSuggestionsBox.classList.add('hidden');
+                return;
+            }
+
+            // Filter suggestions from the main searchIndex
+            const matches = searchIndex.filter(i => i.lower.includes(val)).slice(0, 10);
+
+            if (matches.length > 0) {
+                dirSuggestionsBox.innerHTML = matches.map(m => `
+                    <div class="p-2 hover:bg-slate-700 cursor-pointer text-sm text-gray-300 flex justify-between items-center" 
+                         onclick="selectDirSuggestion('${m.term.replace(/'/g, "\\'")}')">
+                        <span>${m.term}</span>
+                        <span class="text-xs text-gray-500 bg-slate-900 px-2 py-0.5 rounded">${m.type}</span>
+                    </div>
+                `).join('');
+                dirSuggestionsBox.classList.remove('hidden');
+            } else {
+                dirSuggestionsBox.classList.add('hidden');
+            }
+        });
+
+        window.selectDirSuggestion = function (term) {
+            dirSearch.value = term;
+            dirSuggestionsBox.classList.add('hidden');
+            renderDirectory();
+        }
+
+        // Hide on click outside
+        document.addEventListener('click', (e) => {
+            if (!dirSearch.contains(e.target) && !dirSuggestionsBox.contains(e.target)) {
+                dirSuggestionsBox.classList.add('hidden');
+            }
+        });
+
         dirSort.addEventListener('change', renderDirectory);
+
+        // Social Filter Listeners
+        document.getElementById('filterInstagram').addEventListener('change', renderDirectory);
+        document.getElementById('filterYoutube').addEventListener('change', renderDirectory);
+        document.getElementById('filterTwitter').addEventListener('change', renderDirectory);
+        document.getElementById('filterWebsite').addEventListener('change', renderDirectory);
 
     </script>
 </body>
