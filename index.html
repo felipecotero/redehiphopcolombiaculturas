@@ -62,6 +62,7 @@
 
         input[type=range] {
             -webkit-appearance: none;
+            appearance: none;
             width: 100%;
             background: transparent;
         }
@@ -171,8 +172,21 @@
             <i class="fas fa-arrow-down text-gray-500 mt-3 animate-bounce"></i>
         </div>
 
-        <!-- Top 5 Roles (3/4 width) -->
-        <div class="md:col-span-3 glass-panel p-6 neon-border">
+        <!-- Videoteca Call-to-Action (1/4 width) -->
+        <div class="glass-panel p-6 neon-border flex flex-col justify-center items-center text-center cursor-pointer hover:bg-slate-800 transition group"
+            onclick="scrollToVideoGallery()">
+            <div
+                class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform border border-red-500/30 shadow-[0_0_15px_rgba(239,68,68,0.3)]">
+                <i class="fas fa-play-circle text-3xl text-red-400"></i>
+            </div>
+            <h3 class="text-white font-bold text-lg group-hover:text-red-300 transition-colors">Videoteca
+            </h3>
+            <p class="text-gray-400 text-xs mt-2">Explora videos destacados de la comunidad</p>
+            <i class="fas fa-arrow-down text-gray-500 mt-3 animate-bounce"></i>
+        </div>
+
+        <!-- Top 5 Roles (2/4 width) -->
+        <div class="md:col-span-2 glass-panel p-6 neon-border">
             <h3 class="text-gray-400 text-sm uppercase tracking-wider mb-4 text-center">Roles Principales (Top 5)</h3>
             <div id="top-roles-container" class="flex flex-wrap justify-center gap-4">
                 <!-- Injected via JS -->
@@ -311,6 +325,53 @@
         </div>
     </div>
 
+    <!-- Video Gallery Section -->
+    <div id="video-gallery-section" class="glass-panel p-6 neon-border mb-8">
+        <h2 class="text-2xl font-bold mb-4 text-red-400 flex items-center justify-between">
+            <span class="flex items-center"><span class="mr-2">🎬</span> Videoteca Hip Hop</span>
+            <button id="nextVideoBtn"
+                class="text-sm bg-slate-700 hover:bg-slate-600 text-white px-3 py-1 rounded transition-colors">
+                <i class="fas fa-random mr-1"></i> Siguiente Video
+            </button>
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-2">
+                <div
+                    class="relative w-full pt-[56.25%] bg-black rounded-lg overflow-hidden border border-slate-700 shadow-2xl">
+                    <div id="videoPlayer" class="absolute top-0 left-0 w-full h-full"></div>
+                    <div id="videoPlaceholder"
+                        class="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-slate-900 text-gray-500 hidden">
+                        <div class="text-center">
+                            <i class="fab fa-youtube text-4xl mb-2"></i>
+                            <p>Cargando videos...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col justify-between space-y-4 h-full">
+                <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                    <h3 class="text-lg font-bold text-yellow-400 mb-1" id="videoArtistName">Nombre del Artista</h3>
+                    <p class="text-sm text-gray-300 mb-2" id="videoArtistRole">Rol del Artista</p>
+                    <p class="text-xs text-gray-400 italic mb-4" id="videoArtistLocation">Ciudad, Departamento</p>
+
+                    <div class="border-t border-slate-700 pt-2">
+                        <h4 class="text-xs font-bold text-gray-400 uppercase mb-1">Bio / Resumen</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed" id="videoArtistBio">
+                            Información del artista...
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/50 p-4 rounded-lg border border-slate-700">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase mb-2">Contacto</h4>
+                    <div class="flex flex-wrap gap-3" id="videoArtistContact">
+                        <!-- Contact icons injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Directory Section -->
     <div id="directory-section" class="glass-panel p-6 neon-border mb-8">
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -368,6 +429,27 @@
                 <input type="checkbox" id="filterWebsite"
                     class="form-checkbox rounded text-purple-600 bg-slate-800 border-slate-600 focus:ring-purple-500 focus:ring-offset-slate-900">
                 <span><i class="fas fa-globe text-green-400"></i> Web</span>
+            </label>
+        </div>
+
+        <!-- Gender Filters -->
+        <div
+            class="flex flex-wrap gap-4 mb-4 items-center justify-end text-sm text-gray-300 bg-slate-800/50 p-2 rounded-lg border border-slate-700/50">
+            <span class="mr-2 font-bold text-yellow-400"><i class="fas fa-venus-mars"></i> Filtrar por Género:</span>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" id="filterGenderFemale"
+                    class="form-checkbox rounded text-yellow-600 bg-slate-800 border-slate-600 focus:ring-yellow-500 focus:ring-offset-slate-900">
+                <span>Mujer</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" id="filterGenderMale"
+                    class="form-checkbox rounded text-yellow-600 bg-slate-800 border-slate-600 focus:ring-yellow-500 focus:ring-offset-slate-900">
+                <span>Hombre</span>
+            </label>
+            <label class="flex items-center space-x-2 cursor-pointer hover:text-white transition-colors">
+                <input type="checkbox" id="filterGenderDiverse"
+                    class="form-checkbox rounded text-yellow-600 bg-slate-800 border-slate-600 focus:ring-yellow-500 focus:ring-offset-slate-900">
+                <span>Diverso / LGTBIQ+</span>
             </label>
         </div>
 
@@ -971,6 +1053,10 @@
             document.getElementById('directory-section').scrollIntoView({ behavior: 'smooth' });
         }
 
+        function scrollToVideoGallery() {
+            document.getElementById('video-gallery-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
         function getSocialIconClass(platform) {
             if (platform === 'facebook') return 'fab fa-facebook';
             if (platform === 'instagram') return 'fab fa-instagram';
@@ -992,6 +1078,11 @@
             const filterTw = document.getElementById('filterTwitter').checked;
             const filterWeb = document.getElementById('filterWebsite').checked;
 
+            // Gender Filters
+            const filterGenFem = document.getElementById('filterGenderFemale').checked;
+            const filterGenMale = document.getElementById('filterGenderMale').checked;
+            const filterGenDiv = document.getElementById('filterGenderDiverse').checked;
+
             // Filter
             let filtered = rawData.filter(item => {
                 const name = (item.name || '').toLowerCase();
@@ -999,12 +1090,25 @@
                 const dept = (item.dept || '').toLowerCase();
                 const roles = Array.isArray(item.roles) ? item.roles : [];
                 const socials = item.socials || {};
+                const pop = (item.population || '').toLowerCase();
 
                 // Check Social Filters
                 if (filterInsta && !socials.instagram) return false;
                 if (filterYt && !socials.youtube) return false;
                 if (filterTw && !socials.twitter) return false;
                 if (filterWeb && !socials.website) return false;
+
+                // Check Gender Filters
+                // Note: The dataset uses 'population' field for some gender markers or we infer from context if available.
+                // Based on provided data, 'population' contains things like 'Mujer', 'LGTBIQ+', etc.
+                if (filterGenFem || filterGenMale || filterGenDiv) {
+                    let matchesGender = false;
+                    if (filterGenFem && (pop.includes('mujer') || pop.includes('femenino') || pop.includes('madre'))) matchesGender = true;
+                    if (filterGenMale && (pop.includes('hombre') || pop.includes('masculino') || pop.includes('padre'))) matchesGender = true;
+                    if (filterGenDiv && (pop.includes('lgtbi') || pop.includes('diverso') || pop.includes('trans') || pop.includes('no binario'))) matchesGender = true;
+
+                    if (!matchesGender) return false;
+                }
 
                 return (
                     name.includes(searchTerm) ||
@@ -1208,6 +1312,153 @@
         document.getElementById('filterYoutube').addEventListener('change', renderDirectory);
         document.getElementById('filterTwitter').addEventListener('change', renderDirectory);
         document.getElementById('filterWebsite').addEventListener('change', renderDirectory);
+
+        // Gender Filter Listeners
+        document.getElementById('filterGenderFemale').addEventListener('change', renderDirectory);
+        document.getElementById('filterGenderMale').addEventListener('change', renderDirectory);
+        document.getElementById('filterGenderDiverse').addEventListener('change', renderDirectory);
+
+        // --- Video Gallery Logic ---
+        // Load YouTube IFrame API
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        const videoPlaceholder = document.getElementById('videoPlaceholder');
+        const nextVideoBtn = document.getElementById('nextVideoBtn');
+        const videoArtistName = document.getElementById('videoArtistName');
+        const videoArtistRole = document.getElementById('videoArtistRole');
+        const videoArtistLocation = document.getElementById('videoArtistLocation');
+        const videoArtistBio = document.getElementById('videoArtistBio');
+        const videoArtistContact = document.getElementById('videoArtistContact');
+
+        let videoPlaylist = [];
+        let player;
+        let currentVideoIndex = -1;
+
+        function extractVideoId(url) {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        if (window.YT && window.YT.Player) {
+            initVideoGallery();
+        } else {
+            window.onYouTubeIframeAPIReady = function () {
+                initVideoGallery();
+            }
+        }
+
+        function initVideoGallery() {
+            console.log("Initializing Video Gallery...");
+            videoPlaylist = rawData.reduce((acc, item) => {
+                const ytUrl = item.socials && item.socials.youtube;
+                if (ytUrl) {
+                    const videoId = extractVideoId(ytUrl);
+                    if (videoId) {
+                        acc.push({
+                            id: videoId,
+                            data: item // Store full item data
+                        });
+                    }
+                }
+                return acc;
+            }, []);
+
+            console.log("Found videos:", videoPlaylist.length);
+
+            if (videoPlaylist.length > 0) {
+                // Shuffle playlist initially
+                videoPlaylist.sort(() => Math.random() - 0.5);
+
+                // Initialize Player
+                player = new YT.Player('videoPlayer', {
+                    height: '100%',
+                    width: '100%',
+                    videoId: videoPlaylist[0].id,
+                    playerVars: {
+                        'playsinline': 1,
+                        'rel': 0
+                    },
+                    events: {
+                        'onReady': onPlayerReady,
+                        'onStateChange': onPlayerStateChange
+                    }
+                });
+
+                currentVideoIndex = 0;
+                updateArtistInfo(videoPlaylist[0]);
+            } else {
+                document.getElementById('videoPlayer').classList.add('hidden');
+                videoPlaceholder.classList.remove('hidden');
+                videoPlaceholder.innerHTML = '<div class="text-center"><p>No se encontraron videos destacados.</p></div>';
+            }
+        }
+
+        function onPlayerReady(event) {
+            // Player is ready
+        }
+
+        function onPlayerStateChange(event) {
+            // State 0 is ENDED
+            if (event.data === YT.PlayerState.ENDED) {
+                playNextVideo();
+            }
+        }
+
+        function playNextVideo() {
+            if (videoPlaylist.length === 0) return;
+
+            currentVideoIndex = (currentVideoIndex + 1) % videoPlaylist.length;
+            const video = videoPlaylist[currentVideoIndex];
+
+            if (player && player.loadVideoById) {
+                player.loadVideoById(video.id);
+                updateArtistInfo(video);
+            }
+        }
+
+        function updateArtistInfo(video) {
+            const item = video.data;
+
+            // Basic Info
+            videoArtistName.innerText = item.name || 'Artista Desconocido';
+            videoArtistRole.innerText = (item.roles && item.roles.length > 0) ? item.roles.join(', ') : 'Artista Hip Hop';
+            videoArtistLocation.innerText = `${item.city || ''}, ${item.dept || ''}`;
+
+            // Bio Generation
+            let bioText = `${item.name} es un agente cultural ubicado en ${item.city}, ${item.dept}. `;
+            if (item.roles && item.roles.length > 0) {
+                bioText += `Se destaca principalmente en el rol de ${item.roles.join(' y ')}. `;
+            }
+            if (item.type) {
+                bioText += `Su enfoque organizativo es de tipo: ${item.type}. `;
+            }
+            if (item.population && item.population !== 'Ninguno' && item.population !== 'N/A') {
+                bioText += `Se identifica con la población: ${item.population}.`;
+            }
+            videoArtistBio.innerText = bioText;
+
+            // Contact Info
+            let contactHtml = '';
+            if (item.email) {
+                contactHtml += `<a href="mailto:${item.email}" class="text-gray-400 hover:text-white transition-colors" title="Email"><i class="fas fa-envelope text-xl"></i></a>`;
+            }
+            if (item.socials) {
+                if (item.socials.instagram) contactHtml += `<a href="${item.socials.instagram}" target="_blank" class="text-pink-500 hover:text-pink-400 transition-colors" title="Instagram"><i class="fab fa-instagram text-xl"></i></a>`;
+                if (item.socials.facebook) contactHtml += `<a href="${item.socials.facebook}" target="_blank" class="text-blue-600 hover:text-blue-500 transition-colors" title="Facebook"><i class="fab fa-facebook text-xl"></i></a>`;
+                if (item.socials.youtube) contactHtml += `<a href="${item.socials.youtube}" target="_blank" class="text-red-600 hover:text-red-500 transition-colors" title="YouTube"><i class="fab fa-youtube text-xl"></i></a>`;
+                if (item.socials.twitter) contactHtml += `<a href="${item.socials.twitter}" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors" title="Twitter"><i class="fab fa-twitter text-xl"></i></a>`;
+                if (item.socials.tiktok) contactHtml += `<a href="${item.socials.tiktok}" target="_blank" class="text-pink-400 hover:text-pink-300 transition-colors" title="TikTok"><i class="fab fa-tiktok text-xl"></i></a>`;
+                if (item.socials.website) contactHtml += `<a href="${item.socials.website}" target="_blank" class="text-green-400 hover:text-green-300 transition-colors" title="Website"><i class="fas fa-globe text-xl"></i></a>`;
+            }
+            videoArtistContact.innerHTML = contactHtml;
+        }
+
+        nextVideoBtn.addEventListener('click', playNextVideo);
 
     </script>
 </body>
